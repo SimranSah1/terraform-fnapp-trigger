@@ -68,14 +68,40 @@ pipeline:
                     shell: Sh
                     command: |-
                       apt-get update -y && \
-                      apt-get install -y curl apt-transport-https lsb-release gnupg && \
-                      curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
-                      az version && \
+                      apt-get install -y curl apt-transport-https lsb-release gnupg software-properties-common
+
+                      # -----------------------------
+                      # Install Azure CLI
+                      # -----------------------------
+                      curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+                      az version
+
+                      # -----------------------------
+                      # Install Node.js 18 (LTS)
+                      # -----------------------------
+                      curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                      apt-get install -y nodejs
+                      node -v
+                      npm -v
+
+                      # -----------------------------
+                      # Install Azure Functions Core Tools v4
+                      # -----------------------------
+                      npm install -g azure-functions-core-tools@4 --unsafe-perm true
+                      func --version
+
+                      # -----------------------------
+                      # Azure Login using Harness secrets
+                      # -----------------------------
                       az login --service-principal \
-                        -u $ARM_CLIENT_ID \
-                        -p $ARM_CLIENT_SECRET \
-                        --tenant $ARM_TENANT_ID && \
-                      cd /harness/your-build-artifact-folder && \
+                        --username "$ARM_CLIENT_ID" \
+                        --password "$ARM_CLIENT_SECRET" \
+                        --tenant "$ARM_TENANT_ID"
+
+                      # -----------------------------
+                      # Navigate to build artifact & Deploy
+                      # -----------------------------
+                      cd /harness/your-build-artifact-folder
                       func azure functionapp publish <YOUR_FUNCTION_APP_NAME> --typescript
                     envVariables:
                       ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
