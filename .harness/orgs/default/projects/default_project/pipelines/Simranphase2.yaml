@@ -88,7 +88,7 @@ pipeline:
 
                       # Navigate to build artifact & Deploy
                       # -----------------------------
-                      cd /harness/your-build-artifact-folder
+
                       func azure functionapp publish harnessfnapp --typescript
                     envVariables:
                       ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
