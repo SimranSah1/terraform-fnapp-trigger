@@ -39,18 +39,21 @@ pipeline:
                   identifier: buildNodejsapp
                   spec:
                     connectorRef: simrandockerregistryconnectortask3
-                    image: node:18-alpine
+                    image: node:18-bullseye
                     shell: Sh
                     command: |-
                       # Clone your existing Function App project
 
+
                       apt-get update -y
+                      apt-get install -y curl apt-transport-https lsb-release gnupg git
                       apt-get install -y git
                       git clone https://github.com/SimranSah1/terraform-fnapp-trigger.git
                       cd terraform-fnapp-trigger
-                      sudo apt install sudo
+
                       # Install dependencies
                       npm install
+                      # Clone repo & install dependencies
                       curl -sL https://aka.ms/InstallAzureCLIDeb | bash
                     envVariables:
                       ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
