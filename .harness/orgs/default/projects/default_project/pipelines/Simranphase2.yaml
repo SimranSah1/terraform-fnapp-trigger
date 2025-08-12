@@ -73,9 +73,12 @@ pipeline:
                       apt-get install -y curl apt-transport-https lsb-release gnupg && \
                       curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
                       az version && \
-
+                      az login --service-principal \
+                        -u $AZURE_CLIENT_ID \
+                        -p $AZURE_CLIENT_SECRET \
+                        --tenant $AZURE_TENANT_ID && \
                       cd /harness/your-build-artifact-folder && \
-                      func azure functionapp publish harnessfnapp --typescript
+                      func azure functionapp publish <YOUR_FUNCTION_APP_NAME> --typescript
                     envVariables:
                       ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
                       ARM_CLIENT_SECRET: <+secrets.getValue("ARM_CLIENT_SECRET_SIMRAN")>
