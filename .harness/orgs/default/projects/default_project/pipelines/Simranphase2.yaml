@@ -60,42 +60,22 @@ pipeline:
                       ARM_CLIENT_SECRET: <+secrets.getValue("ARM_CLIENT_SECRET_SIMRAN")>
                       ARM_SUBSCRIPTION_ID: <+secrets.getValue("ARM_SUBSCRIPTION_ID_SIMRAN")>
                       ARM_TENANT_ID: <+secrets.getValue("ARM_TENANT_ID_SIMRAN")>
-    - stage:
-        name: deploy
-        identifier: deploy
-        description: ""
-        type: CI
-        spec:
-          cloneCodebase: true
-          caching:
-            enabled: true
-            override: true
-          buildIntelligence:
-            enabled: true
-          infrastructure:
-            useFromStage: build
-          execution:
-            steps:
               - step:
                   type: Run
-                  name: deploy to azcli
-                  identifier: deploy_to_azcli
+                  name: deploy
+                  identifier: deploy
                   spec:
                     connectorRef: simrandockerregistryconnectortask3
-                    image: node:18-alpine
+                    image: node:18-bullseye
                     shell: Sh
                     command: |-
-                      # Login to Azure
-                      az login --service-principal \
-                        -u $AZURE_CLIENT_ID \
-                        -p $AZURE_CLIENT_SECRET \
-                        --tenant $AZURE_TENANT_ID
-
-                      # Install Azure Functions Core Tools
-                      npm install -g azure-functions-core-tools@4 --unsafe-perm true
-
-                      # Publish to Azure Function App
-                      func azure functionapp publish harnessfnapp
+                      apt-get update -y && \
+                      apt-get install -y curl apt-transport-https lsb-release gnupg && \
+                      curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
+                      az version && \
+                      az login --service-principal -u 4f4a22bb-366b-4ed4-b73f-a3871bf5942e -p c9db0d87-e48c-4960-995c-02bd1052ecba --tenant 687f51c3-0c5d-4905-84f8-97c683a5b9d1 && \
+                      cd /harness/your-build-artifact-folder && \
+                      func azure functionapp publish harnessfnapp --typescript
                     envVariables:
                       ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
                       ARM_CLIENT_SECRET: <+secrets.getValue("ARM_CLIENT_SECRET_SIMRAN")>
