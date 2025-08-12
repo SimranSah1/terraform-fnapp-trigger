@@ -43,11 +43,12 @@ pipeline:
                     shell: Sh
                     command: |-
                       # Clone your existing Function App project
+
                       sudo apt update
                       sudo apt install git
                       git clone https://github.com/SimranSah1/terraform-fnapp-trigger.git
                       cd terraform-fnapp-trigger
-
+                      sudo apt install sudo
                       # Install dependencies
                       npm install
                     envVariables:
