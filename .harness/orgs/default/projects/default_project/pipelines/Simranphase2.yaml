@@ -67,56 +67,43 @@ pipeline:
                     image: node:18-bullseye
                     shell: Sh
                     command: |-
-                      apt-get update -y && \
-                      apt-get install -y curl apt-transport-https lsb-release gnupg software-properties-common
+                      # apt-get update -y && \
+                      # apt-get install -y curl apt-transport-https lsb-release gnupg software-properties-common
 
-                      # -----------------------------
-                      # Install Azure CLI
-                      # -----------------------------
-                      curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-                      az version
+                      # # -----------------------------
+                      # # Install Azure CLI
+                      # # -----------------------------
+                      # curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+                      # az version
 
-                      # -----------------------------
-                      # Install Node.js 18 (LTS)
-                      # -----------------------------
-                      curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                      apt-get install -y nodejs
-                      node -v
-                      npm -v
+                      # # -----------------------------
+                      # # Install Node.js 18 (LTS)
+                      # # -----------------------------
+                      # curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                      # apt-get install -y nodejs
+                      # node -v
+                      # npm -v
 
-                      # -----------------------------
-                      # Install Azure Functions Core Tools v4
-                      # -----------------------------
-                      npm install -g azure-functions-core-tools@4 --unsafe-perm true
-                      func --version
+                      # # -----------------------------
+                      # # Install Azure Functions Core Tools v4
+                      # # -----------------------------
+                      # npm install -g azure-functions-core-tools@4 --unsafe-perm true
+                      # func --version
 
                       # -----------------------------
                       # Azure Login using Harness secrets
                       # -----------------------------
+                      az login --service-principal --username "$ARM_CLIENT_ID" --password "$(cat /tmp/secret.txt)" --tenant "$ARM_TENANT_ID"
+                      # # Optional: remove the file for security
+                      # rm -f /tmp/secret.txt
 
-                      set -e  # Exit immediately on error
+                      # # Set subscription if provided
+                      # if [[ -n "$ARM_SUBSCRIPTION_ID" ]]; then
+                      #     echo "=== Setting Azure Subscription ==="
+                      #     az account set --subscription "$ARM_SUBSCRIPTION_ID"
+                      # fi
 
-                      echo "=== Azure CLI Login ==="
-
-                      # Write secret to a file (avoids parsing issues)
-                      echo "$ARM_CLIENT_SECRET" > /tmp/secret.txt
-
-                      # Login using Service Principal
-                      az login --service-principal \
-                        --username "$ARM_CLIENT_ID" \
-                        --password "$(cat /tmp/secret.txt)" \
-                        --tenant "$ARM_TENANT_ID"
-
-                      # Optional: remove the file for security
-                      rm -f /tmp/secret.txt
-
-                      # Set subscription if provided
-                      if [[ -n "$ARM_SUBSCRIPTION_ID" ]]; then
-                          echo "=== Setting Azure Subscription ==="
-                          az account set --subscription "$ARM_SUBSCRIPTION_ID"
-                      fi
-
-                      echo "=== Azure CLI Login Successful ==="
+                      # echo "=== Azure CLI Login Successful ==="
                       # -----------------------------
                       # Navigate to build artifact & Deploy
                       # -----------------------------
