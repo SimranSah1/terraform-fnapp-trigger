@@ -95,15 +95,15 @@ pipeline:
                       # -----------------------------
                       az login --service-principal --username "$ARM_CLIENT_ID" --password "$(cat /tmp/secret.txt)" --tenant "$ARM_TENANT_ID"
                       # # Optional: remove the file for security
-                      # rm -f /tmp/secret.txt
+                      rm -f /tmp/secret.txt
 
                       # # Set subscription if provided
-                      # if [[ -n "$ARM_SUBSCRIPTION_ID" ]]; then
-                      #     echo "=== Setting Azure Subscription ==="
-                      #     az account set --subscription "$ARM_SUBSCRIPTION_ID"
-                      # fi
+                      if [[ -n "$ARM_SUBSCRIPTION_ID" ]]; then
+                          echo "=== Setting Azure Subscription ==="
+                          az account set --subscription "$ARM_SUBSCRIPTION_ID"
+                      fi
 
-                      # echo "=== Azure CLI Login Successful ==="
+                      echo "=== Azure CLI Login Successful ==="
                       # -----------------------------
                       # Navigate to build artifact & Deploy
                       # -----------------------------
