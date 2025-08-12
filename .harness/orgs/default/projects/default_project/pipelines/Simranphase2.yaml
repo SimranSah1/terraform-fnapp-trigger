@@ -1,0 +1,96 @@
+pipeline:
+  name: Simran-phase2
+  identifier: Simranphase2
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: simrangithubconnectortask3
+        repoName: terraform-fnapp-trigger
+        build: <+input>
+  stages:
+    - stage:
+        name: build
+        identifier: build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          buildIntelligence:
+            enabled: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: simranaksinfraconnector
+              namespace: harness-delegate-ng
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: build-Nodejs-app
+                  identifier: buildNodejsapp
+                  spec:
+                    connectorRef: simrandockerregistryconnectortask3
+                    image: node:18-alpine
+                    shell: Sh
+                    command: |-
+                      # Clone your existing Function App project
+                      git clone https://github.com/SimranSah1/terraform-fnapp-trigger.git
+                      cd terraform-fnapp-trigger
+
+                      # Install dependencies
+                      npm install
+                    envVariables:
+                      ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
+                      ARM_CLIENT_SECRET: <+secrets.getValue("ARM_CLIENT_SECRET_SIMRAN")>
+                      ARM_SUBSCRIPTION_ID: <+secrets.getValue("ARM_SUBSCRIPTION_ID_SIMRAN")>
+                      ARM_TENANT_ID: <+secrets.getValue("ARM_TENANT_ID_SIMRAN")>
+    - stage:
+        name: deploy
+        identifier: deploy
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          buildIntelligence:
+            enabled: true
+          infrastructure:
+            useFromStage: build
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: deploy to azcli
+                  identifier: deploy_to_azcli
+                  spec:
+                    connectorRef: simrandockerregistryconnectortask3
+                    image: node:18-alpine
+                    shell: Sh
+                    command: |-
+                      # Login to Azure
+                      az login --service-principal \
+                        -u $AZURE_CLIENT_ID \
+                        -p $AZURE_CLIENT_SECRET \
+                        --tenant $AZURE_TENANT_ID
+
+                      # Install Azure Functions Core Tools
+                      npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
+                      # Publish to Azure Function App
+                      func azure functionapp publish harnessfnapp
+                    envVariables:
+                      ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
+                      ARM_CLIENT_SECRET: <+secrets.getValue("ARM_CLIENT_SECRET_SIMRAN")>
+                      ARM_SUBSCRIPTION_ID: <+secrets.getValue("ARM_SUBSCRIPTION_ID_SIMRAN")>
+                      ARM_TENANT_ID: <+secrets.getValue("ARM_TENANT_ID_SIMRAN")>
