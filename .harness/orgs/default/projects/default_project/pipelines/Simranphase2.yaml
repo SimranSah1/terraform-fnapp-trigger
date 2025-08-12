@@ -71,24 +71,24 @@ pipeline:
                       # apt-get install -y curl apt-transport-https lsb-release gnupg software-properties-common
 
                       # # -----------------------------
-                      # # Install Azure CLI
+                      #  Install Azure CLI
                       # # -----------------------------
-                      # curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-                      # az version
+                      curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+                      az version
 
                       # # -----------------------------
-                      # # Install Node.js 18 (LTS)
-                      # # -----------------------------
-                      # curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                      # apt-get install -y nodejs
-                      # node -v
-                      # npm -v
+                      # Install Node.js 18 (LTS)
+                      #-----------------------------
+                      curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                      apt-get install -y nodejs
+                      node -v
+                      npm -v
 
                       # # -----------------------------
                       # # Install Azure Functions Core Tools v4
                       # # -----------------------------
-                      # npm install -g azure-functions-core-tools@4 --unsafe-perm true
-                      # func --version
+                      npm install -g azure-functions-core-tools@4 --unsafe-perm true
+                      func --version
 
                       # -----------------------------
                       # Azure Login using Harness secrets
