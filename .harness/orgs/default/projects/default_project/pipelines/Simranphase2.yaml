@@ -43,8 +43,6 @@ pipeline:
                     shell: Sh
                     command: |-
                       # Clone your existing Function App project
-
-
                       apt-get update -y
                       apt-get install -y curl apt-transport-https lsb-release gnupg git
                       apt-get install -y git
@@ -74,9 +72,9 @@ pipeline:
                       curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
                       az version && \
                       az login --service-principal \
-                        -u $AZURE_CLIENT_ID \
-                        -p $AZURE_CLIENT_SECRET \
-                        --tenant $AZURE_TENANT_ID && \
+                        -u $ARM_CLIENT_ID \
+                        -p $ARM_CLIENT_SECRET \
+                        --tenant $ARM_TENANT_ID && \
                       cd /harness/your-build-artifact-folder && \
                       func azure functionapp publish <YOUR_FUNCTION_APP_NAME> --typescript
                     envVariables:
