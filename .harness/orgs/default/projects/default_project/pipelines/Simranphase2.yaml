@@ -94,15 +94,34 @@ pipeline:
                       # Azure Login using Harness secrets
                       # -----------------------------
 
+                      set -e  # Exit immediately on error
+
+                      echo "=== Azure CLI Login ==="
+
+                      # Write secret to a file (avoids parsing issues)
+                      echo "$ARM_CLIENT_SECRET" > /tmp/secret.txt
+
+                      # Login using Service Principal
                       az login --service-principal \
                         --username "$ARM_CLIENT_ID" \
-                        --password "$ARM_CLIENT_SECRET" \
+                        --password "$(cat /tmp/secret.txt)" \
                         --tenant "$ARM_TENANT_ID"
+
+                      # Optional: remove the file for security
+                      rm -f /tmp/secret.txt
+
+                      # Set subscription if provided
+                      if [[ -n "$ARM_SUBSCRIPTION_ID" ]]; then
+                          echo "=== Setting Azure Subscription ==="
+                          az account set --subscription "$ARM_SUBSCRIPTION_ID"
+                      fi
+
+                      echo "=== Azure CLI Login Successful ==="
                       # -----------------------------
                       # Navigate to build artifact & Deploy
                       # -----------------------------
                       cd /harness/your-build-artifact-folder
-                      func azure functionapp publish <YOUR_FUNCTION_APP_NAME> --typescript
+                      func azure functionapp publish harnessfnapp --typescript
                     envVariables:
                       ARM_CLIENT_ID: <+secrets.getValue("ARM_CLIENT_ID_SIMRAN")>
                       ARM_CLIENT_SECRET: <+secrets.getValue("ARM_CLIENT_SECRET_SIMRAN")>
