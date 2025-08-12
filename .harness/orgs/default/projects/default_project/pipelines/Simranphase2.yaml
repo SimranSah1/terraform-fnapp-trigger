@@ -73,7 +73,7 @@ pipeline:
                       apt-get install -y curl apt-transport-https lsb-release gnupg && \
                       curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
                       az version && \
-                      az login --service-principal -u 4f4a22bb-366b-4ed4-b73f-a3871bf5942e -p c9db0d87-e48c-4960-995c-02bd1052ecba --tenant 687f51c3-0c5d-4905-84f8-97c683a5b9d1 && \
+
                       cd /harness/your-build-artifact-folder && \
                       func azure functionapp publish harnessfnapp --typescript
                     envVariables:
